@@ -5,6 +5,7 @@
     <RootNamespace>aoc_2024_fsharp</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Utils.fs" />
     <Compile Include="Day1.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
