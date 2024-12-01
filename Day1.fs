@@ -6,7 +6,7 @@ let solve =
     let a1, a2 =
         File.ReadAllLines("input/day1.txt")
         |> Array.map (fun line ->
-            match line.Split() with
+            match line.Split("   ") with
             | [| a1; a2 |] -> int a1, int a2
             | _ -> failwith "invalid input")
         |> Array.unzip
