@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "msbuild",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build",
+			"label": "Build: aoc-2024-fsharp.fsproj",
+			"detail": "Build the aoc-2024-fsharp.fsproj project using dotnet build"
+		}
+	]
+}
