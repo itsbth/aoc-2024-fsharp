@@ -12,7 +12,7 @@ let solve =
 
     printf "part 1: %d\n" (Array.zip a1 a2 |> Array.sumBy (fun (a, b) -> abs (a - b)))
 
-    let counts = (a2 |> Array.countBy id |> Map.ofArray)
+    let counts = a2 |> Array.countBy id |> Map.ofArray
 
     printf
         "part 2: %d\n"
