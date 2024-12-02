@@ -25,10 +25,9 @@ let valid2 (a: int array) =
     // correctness by accident: seq { .. } is inclusive, so we end up including the index past the last element, therefore also testing the whole array
     seq { 0 .. (Array.length a) } |> Seq.exists ((flip skipi) a >> diff >> valid)
 
-let solve =
+let solve () : int option * int option =
     let input =
         File.ReadAllLines("input/day2.txt")
         |> Array.map (fun line -> line.Split(' ', StringSplitOptions.RemoveEmptyEntries) |> Array.map int)
 
-    printfn "part 1: %d" (input |> Array.map diff |> countp valid)
-    printfn "part 2: %d" (input |> countp valid2)
+    input |> Array.map diff |> countp valid |> Some, None // input |> countp valid2 |> Some
