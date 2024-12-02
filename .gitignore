@@ -2,3 +2,4 @@
 /obj
 .fake
 .idea
+input/day*.txt
