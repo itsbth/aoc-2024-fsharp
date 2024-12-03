@@ -3,7 +3,7 @@ module Day3
 open System.IO
 
 let (|Alpha|_|) (a: char) =
-    // hack: single quote is allowed
+    // hack: single quote is allowed (keyword "don't"); let's just treat it as alpha for simplicity
     if a >= 'a' && a <= 'z' || a = '\'' then Some a else None
 
 let (|Numeric|_|) (a: char) =
@@ -12,47 +12,54 @@ let (|Numeric|_|) (a: char) =
 type token =
     | Ident of string
     | Num of int
-    | RParen of unit
-    | LParen of unit
-    | Comma of unit
-    | Invalid of unit
+    | RParen
+    | LParen
+    | Comma
+    | Invalid
+    | EOF
 
-let tokenizeIdent (str: string) =
-    let rec loop (acc: string) (str: string) : token * string =
-        match str[0] with
-        | Alpha(a) -> loop (acc + string a) str[1..]
-        | _ -> Ident acc, str
+let (|Punctuation|_|) (a: char) =
+    match a with
+    | '(' -> Some LParen
+    | ')' -> Some RParen
+    | ',' -> Some Comma
+    | _ -> None
 
-    loop "" str
-
-let tokenizeNum (str: string) =
-    let rec loop (acc: string) (str: string) =
-        match str[0] with
-        | Numeric(a) -> loop (acc + string a) str[1..]
-        | _ -> Num(int acc), str
-
-    loop "" str
-
-let tokenizeOne (str: string) =
-    match str[0] with
-    | '(' -> LParen(), str[1..]
-    | ')' -> RParen(), str[1..]
-    | ',' -> Comma(), str[1..]
-    | Alpha(_) -> tokenizeIdent str
-    | Numeric(_) -> tokenizeNum str
-    | _ -> Invalid(), str[1..]
-
-let tokenize (str: string) =
-    let rec loop (acc: token list) (str: string) =
+let tokenizeIdent (str: char list) =
+    let rec loop (acc: char list) (str: char list) : token * char list =
         match str with
-        | "" -> acc
+        | Alpha(a) :: rest -> loop (a :: acc) rest
+        | _ -> Ident(acc |> List.rev |> List.toArray |> System.String), str
+
+    loop List.empty str
+
+let tokenizeNum (str: char list) =
+    let rec loop (acc: char list) (str: char list) =
+        match str with
+        | Numeric(a) :: rest -> loop (a :: acc) rest
+        | _ -> Num(acc |> List.rev |> List.toArray |> System.String |> int), str
+
+    loop List.empty str
+
+let tokenizeOne (str: char list) =
+    match str with
+    | Punctuation(a) :: rest -> a, rest
+    | Alpha _ :: _ -> tokenizeIdent str
+    | Numeric _ :: _ -> tokenizeNum str
+    | _ :: rest -> Invalid, rest
+    | [] -> EOF, []
+
+let tokenize (str: char list) =
+    let rec loop (acc: token list) (str: char list) =
+        match str with
+        | [] -> List.rev acc
         | _ ->
             let tok, rest = tokenizeOne str
-            loop (acc @ [ tok ]) rest
+            loop (tok :: acc) rest
 
-    loop [] str
+    loop List.empty str
 
-/// We used greedy matching for idents, but e.g. xmul should be mul (strictly speaking Invalid::Ident("mul"), but we don't actually care about invalid tokens)
+/// We used greedy matching for idents, but e.g. xmul should be mul (strictly speaking Invalid :: Ident("mul"), but we don't actually care about invalid tokens)
 /// EndsWith is strictly speaking not correct, but as the syntax only cares about identifiers immediately succeeded by a paren, it's good enough
 let fixupTokens =
     List.map (fun (t: token) ->
@@ -64,16 +71,16 @@ let fixupTokens =
 
 type node =
     | Mul of int * int
-    | Do of unit
-    | Dont of unit
+    | Do
+    | Dont
 
 let parse (tokens: token list) =
     let rec loop (acc: node list) (tokens: token list) =
         match tokens with
-        | [] -> acc
-        | Ident("mul") :: LParen() :: Num(a) :: Comma() :: Num(b) :: RParen() :: rest -> loop (acc @ [ Mul(a, b) ]) rest
-        | Ident("do") :: LParen() :: RParen() :: rest -> loop (acc @ [ Do() ]) rest
-        | Ident("don't") :: LParen() :: RParen() :: rest -> loop (acc @ [ Dont() ]) rest
+        | [] -> List.rev acc
+        | Ident("mul") :: LParen :: Num(a) :: Comma :: Num(b) :: RParen :: rest -> loop (Mul(a, b) :: acc) rest
+        | Ident("do") :: LParen :: RParen :: rest -> loop (Do :: acc) rest
+        | Ident("don't") :: LParen :: RParen :: rest -> loop (Dont :: acc) rest
         | _ :: rest -> loop acc rest
 
     loop [] tokens
@@ -84,7 +91,8 @@ type s =
       Enabled: bool }
 
 let solve () =
-    let input = File.ReadAllText("input/day3.txt") |> tokenize |> fixupTokens
+    let input =
+        File.ReadAllText("input/day3.txt") |> Seq.toList |> tokenize |> fixupTokens
 
     let parsed = parse input
 
@@ -96,8 +104,8 @@ let solve () =
                     { acc with
                         Part1 = acc.Part1 + a * b
                         Part2 = if acc.Enabled then acc.Part2 + a * b else acc.Part2 }
-                | Do() -> { acc with Enabled = true }
-                | Dont() -> { acc with Enabled = false })
+                | Do -> { acc with Enabled = true }
+                | Dont -> { acc with Enabled = false })
             { Part1 = 0; Part2 = 0; Enabled = true }
             parsed
 
