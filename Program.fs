@@ -5,6 +5,7 @@ type solver = unit -> int option * int option
 let solvers = Map [
     (1, Day1.solve)
     (2, Day2.solve)
+    (3, Day3.solve)
 ]
 
 [<EntryPoint>]
