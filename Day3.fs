@@ -2,13 +2,6 @@ module Day3
 
 open System.IO
 
-let (|Alpha|_|) (a: char) =
-    // hack: single quote is allowed (keyword "don't"); let's just treat it as alpha for simplicity
-    if a >= 'a' && a <= 'z' || a = '\'' then Some a else None
-
-let (|Numeric|_|) (a: char) =
-    if a >= '0' && a <= '9' then Some a else None
-
 type token =
     | Ident of string
     | Num of int
@@ -25,27 +18,30 @@ let (|Punctuation|_|) (a: char) =
     | ',' -> Some Comma
     | _ -> None
 
-let tokenizeIdent (str: char list) =
-    let rec loop (acc: char list) (str: char list) : token * char list =
-        match str with
-        | Alpha(a) :: rest -> loop (a :: acc) rest
-        | _ -> Ident(acc |> List.rev |> List.toArray |> System.String), str
+let createMatcher (pred: char -> bool) =
+    let matcher (a: char list) : (char list * char list) option =
+        let rec loop (str: char list) (rest: char list) =
+            match rest with
+            | a :: rest when pred a -> loop (a :: str) rest
+            | _ -> (str |> List.rev), rest
 
-    loop List.empty str
+        match loop [] a with
+        | [], _ -> None
+        | a, rest -> Some(a, rest)
 
-let tokenizeNum (str: char list) =
-    let rec loop (acc: char list) (str: char list) =
-        match str with
-        | Numeric(a) :: rest -> loop (a :: acc) rest
-        | _ -> Num(acc |> List.rev |> List.toArray |> System.String |> int), str
+    matcher
 
-    loop List.empty str
+let (|Numeric|_|) = createMatcher (fun a -> a >= '0' && a <= '9')
+// Domain: a..z, ' (to handle "don't"; ugly but that's the spec)
+let (|Alpha|_|) = createMatcher (fun a -> a >= 'a' && a <= 'z' || a = '\'')
+
+let charListToString (str: char list) = new string (str |> Array.ofList)
 
 let tokenizeOne (str: char list) =
     match str with
     | Punctuation(a) :: rest -> a, rest
-    | Alpha _ :: _ -> tokenizeIdent str
-    | Numeric _ :: _ -> tokenizeNum str
+    | Alpha(ident, rest) -> Ident(charListToString ident), rest
+    | Numeric(num, rest) -> Num(num |> charListToString |> int), rest
     | _ :: rest -> Invalid, rest
     | [] -> EOF, []
 
