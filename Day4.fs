@@ -10,8 +10,8 @@ let directions =
 
 let target = "XMAS"
 
-let solve () =
-    let input = File.ReadAllLines "./input/day4.txt" |> Array.map _.ToCharArray()
+let solve (file: string) =
+    let input = File.ReadAllLines file |> Array.map _.ToCharArray()
     // find row and col of all X chars
     let potentialStarts =
         [ for i in 0 .. input.Length - 1 do

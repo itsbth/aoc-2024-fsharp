@@ -3,9 +3,9 @@ module Day1
 open System.IO
 open System
 
-let solve () : int option * int option =
+let solve (file: string) : int option * int option =
     let a1, a2 =
-        File.ReadAllLines("input/day1.txt")
+        File.ReadAllLines file
         |> Array.map (fun line ->
             match line.Split(' ', StringSplitOptions.RemoveEmptyEntries) with
             | [| a1; a2 |] -> int a1, int a2
@@ -17,7 +17,8 @@ let solve () : int option * int option =
     let part1 = Array.zip a1 a2 |> Array.sumBy Utils.absoluteDifference |> Some
 
     let counts = a2 |> Array.countBy id |> Map.ofArray
-    let part2 = 
+
+    let part2 =
         a1
         |> Array.sumBy (fun v1 ->
             match counts |> Map.tryFind v1 with

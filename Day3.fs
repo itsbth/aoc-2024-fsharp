@@ -86,9 +86,9 @@ type s =
       Part2: int
       Enabled: bool }
 
-let solve () =
+let solve (file: string) =
     let input =
-        File.ReadAllText("input/day3.txt") |> Seq.toList |> tokenize |> fixupTokens
+        File.ReadAllText(file) |> Seq.toList |> tokenize |> fixupTokens
 
     let parsed = parse input
 

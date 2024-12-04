@@ -14,9 +14,9 @@ let valid a =
 let valid2 (a: int array) =
     seq { 0 .. (Array.length a) } |> Seq.exists ((flip skipi) a >> diff >> valid)
 
-let solve () : int option * int option =
+let solve (file: string) : int option * int option =
     let input =
-        File.ReadAllLines("input/day2.txt")
+        File.ReadAllLines file
         |> Array.map (fun line -> line.Split(' ', StringSplitOptions.RemoveEmptyEntries) |> Array.map int)
 
     input |> Array.map diff |> countp valid |> Some, None // input |> countp valid2 |> Some
