@@ -9,12 +9,17 @@
     <Compile Include="Day1.fs" />
     <Compile Include="Day2.fs" />
     <Compile Include="Day3.fs" />
+    <Compile Include="Day4.fs" />
     <Compile Include="Program.fs" />
     <Content Include="input\day2.txt" />
     <Content Include="input\day1.txt" />
     <Content Include="input\sample2.txt" />
     <Content Include="input\day3.txt" />
     <Content Include="input\sample3.txt" />
+    <Content Include="input\sample4.txt" />
+    <Content Include="input\sample4-2.txt" />
+    <Content Include="input\day4.txt" />
+    <Content Include="input\sample4-3.txt" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpPlus" Version="1.6.1" />
