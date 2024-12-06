@@ -3,7 +3,7 @@
 type solver = string -> int option * int option
 
 let solvers =
-    Map [ (1, Day1.solve); (2, Day2.solve); (3, Day3.solve); (4, Day4.solve) ]
+    Map [ (1, Day1.solve); (2, Day2.solve); (3, Day3.solve); (4, Day4.solve); (6, Day6.solve) ]
 
 [<EntryPoint>]
 let main argv =
@@ -28,13 +28,16 @@ let main argv =
     match Map.tryFind day solvers with
     | Some solve ->
         printfn $"Running solver for day %d{day} with input %s{inputFile}"
+        let sw = System.Diagnostics.Stopwatch.StartNew()
         let part1, part2 = solve inputFile
+        sw.Stop()
 
         match part1, part2 with
         | Some p1, Some p2 -> printfn $"Part 1: %d{p1}\nPart 2: %d{p2}"
         | Some p1, None -> printfn $"Part 1: %d{p1}"
         | None, Some p2 -> printfn $"Part 2: %d{p2}"
         | None, None -> printfn "No solution found"
+        printfn $"Elapsed: {sw.Elapsed}"
 
         0
     | None ->
