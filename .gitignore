@@ -3,3 +3,4 @@
 .fake
 .idea
 input/day*.txt
+.session
