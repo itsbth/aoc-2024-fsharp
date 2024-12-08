@@ -50,12 +50,14 @@ let parseArgs cli =
 
     loop
         { day = DateTime.Today.Day
-          force = false; help = false }
+          force = false
+          help = false }
         cli
 
 let args = parseArgs <| List.ofArray fsi.CommandLineArgs
 
 printfn $"Fetching input for day %d{args.day}"
+
 if args.help then
     printfn $"Usage: GetInput [-d <day>] [-f] [-h]"
     printfn $"-d <day>  Day to fetch input for (default: %d{DateTime.Today.Day})"
